@@ -4,20 +4,16 @@ import (
 	"context"
 )
 
-type server interface {
-	Run(ctx context.Context)
-}
-
-type defaultServer struct {
+type server struct {
 	port uint16
 }
 
-func NewDefaultServer(config *Configuration) *defaultServer {
-	return &defaultServer{
+func NewServer(config *Configuration) *server {
+	return &server{
 		port: config.Port,
 	}
 }
 
-func (self *defaultServer) Run(ctx context.Context) {
+func (self *server) Run(ctx context.Context) {
 
 }
