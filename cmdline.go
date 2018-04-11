@@ -9,7 +9,6 @@ import (
 
 type Configuration struct {
 	IsServer     bool
-	UseUDP       bool
 	TestTime     uint // Uint: Second.
 	FragmentSize uint
 	Destination  string
@@ -24,12 +23,6 @@ func (self Configuration) String() string {
 		result = fmt.Sprintf("Run as client. ")
 	}
 
-	if self.UseUDP {
-		result += fmt.Sprintf("Using UDP. ")
-	} else {
-		result += fmt.Sprintf("Using TCP. ")
-	}
-
 	result += fmt.Sprintf("Test for %vs. ", self.TestTime)
 	result += fmt.Sprintf("Sending fragment size %v. ", self.FragmentSize)
 	if !self.IsServer {
@@ -42,7 +35,6 @@ func (self Configuration) String() string {
 func (self *Configuration) Usage() {
 	fmt.Println(fmt.Sprintf("Usage %v", os.Args[0]))
 	fmt.Println(fmt.Sprintf("-s           Work as a server (Default as a client)"))
-	fmt.Println(fmt.Sprintf("-u           Using UDP (Default using TCP)"))
 	fmt.Println(fmt.Sprintf("-f           Set the fragment size (Defult 1460)"))
 	fmt.Println(fmt.Sprintf("-t           Set the test time in unit second (Default 10s)"))
 	fmt.Println(fmt.Sprintf("-a           Set the destination for client (Default 127.0.0.1)"))
@@ -51,11 +43,10 @@ func (self *Configuration) Usage() {
 
 func (self *Configuration) ParseArguments() {
 	flag.Usage = self.Usage
-	var isServer, useUDP bool
+	var isServer bool
 	var fragmentSize, testTime, port uint
 	var address string
 	flag.BoolVar(&isServer, "s", false, "If run as a server")
-	flag.BoolVar(&useUDP, "u", false, "Using UDP")
 
 	flag.UintVar(&fragmentSize, "f", 1460, "The fragment size")
 	flag.UintVar(&testTime, "t", 10, "The test time")
@@ -65,7 +56,6 @@ func (self *Configuration) ParseArguments() {
 	flag.Parse()
 
 	self.IsServer = isServer
-	self.UseUDP = useUDP
 	self.FragmentSize = fragmentSize
 	self.TestTime = testTime
 	self.Destination = address
@@ -80,7 +70,6 @@ func (self *Configuration) ParseArguments() {
 func NewDefaultConfiguration() *Configuration {
 	return &Configuration{
 		IsServer:     false,
-		UseUDP:       false,
 		TestTime:     10,
 		FragmentSize: 1460,
 		Destination:  "",
