@@ -7,39 +7,39 @@ import (
 	"os"
 )
 
-type configuration struct {
-	isServer     bool
-	useUDP       bool
-	testTime     uint // Uint: Second.
-	fragmentSize uint
-	destination  string
-	port         uint16
+type Configuration struct {
+	IsServer     bool
+	UseUDP       bool
+	TestTime     uint // Uint: Second.
+	FragmentSize uint
+	Destination  string
+	Port         uint16
 }
 
-func (self configuration) String() string {
+func (self Configuration) String() string {
 	var result string
-	if self.isServer {
+	if self.IsServer {
 		result = fmt.Sprintf("Run as server. ")
 	} else {
 		result = fmt.Sprintf("Run as client. ")
 	}
 
-	if self.useUDP {
+	if self.UseUDP {
 		result += fmt.Sprintf("Using UDP. ")
 	} else {
 		result += fmt.Sprintf("Using TCP. ")
 	}
 
-	result += fmt.Sprintf("Test for %vs. ", self.testTime)
-	result += fmt.Sprintf("Sending fragment size %v. ", self.fragmentSize)
-	if !self.isServer {
-		result += fmt.Sprintf("Destination %v ", self.destination)
+	result += fmt.Sprintf("Test for %vs. ", self.TestTime)
+	result += fmt.Sprintf("Sending fragment size %v. ", self.FragmentSize)
+	if !self.IsServer {
+		result += fmt.Sprintf("Destination %v ", self.Destination)
 	}
-	result += fmt.Sprintf("Working port %v ", self.port)
+	result += fmt.Sprintf("Working port %v ", self.Port)
 	return result
 }
 
-func (self *configuration) Usage() {
+func (self *Configuration) Usage() {
 	fmt.Println(fmt.Sprintf("Usage %v", os.Args[0]))
 	fmt.Println(fmt.Sprintf("-s           Work as a server (Default as a client)"))
 	fmt.Println(fmt.Sprintf("-u           Using UDP (Default using TCP)"))
@@ -49,7 +49,7 @@ func (self *configuration) Usage() {
 	fmt.Println(fmt.Sprintf("-p           Set the port for listen or connect (Default 9973)"))
 }
 
-func (self *configuration) ParseArguments() {
+func (self *Configuration) ParseArguments() {
 	flag.Usage = self.Usage
 	var isServer, useUDP bool
 	var fragmentSize, testTime, port uint
@@ -64,43 +64,43 @@ func (self *configuration) ParseArguments() {
 	flag.StringVar(&address, "a", "127.0.0.1", "The destination address")
 	flag.Parse()
 
-	self.isServer = isServer
-	self.useUDP = useUDP
-	self.fragmentSize = fragmentSize
-	self.testTime = testTime
-	self.destination = address
+	self.IsServer = isServer
+	self.UseUDP = useUDP
+	self.FragmentSize = fragmentSize
+	self.TestTime = testTime
+	self.Destination = address
 	if port >= 65535 {
-		self.port = 9973
+		self.Port = 9973
 	} else {
-		self.port = uint16(port)
+		self.Port = uint16(port)
 	}
 	self.fixArgumentByDefault()
 }
 
-func NewDefaultConfiguration() *configuration {
-	return &configuration{
-		isServer:     false,
-		useUDP:       false,
-		testTime:     10,
-		fragmentSize: 1460,
-		destination:  "",
-		port:         9973,
+func NewDefaultConfiguration() *Configuration {
+	return &Configuration{
+		IsServer:     false,
+		UseUDP:       false,
+		TestTime:     10,
+		FragmentSize: 1460,
+		Destination:  "",
+		Port:         9973,
 	}
 }
 
-func (self *configuration) fixArgumentByDefault() {
-	if self.isServer && self.port == 0 {
-		self.port = 9973
+func (self *Configuration) fixArgumentByDefault() {
+	if self.IsServer && self.Port == 0 {
+		self.Port = 9973
 	}
-	if !self.isServer {
-		if self.port == 0 {
-			self.port = 9973
+	if !self.IsServer {
+		if self.Port == 0 {
+			self.Port = 9973
 		}
-		if _, err := net.ResolveIPAddr("ip4", self.destination); err != nil {
-			self.destination = "127.0.0.1"
+		if _, err := net.ResolveIPAddr("ip4", self.Destination); err != nil {
+			self.Destination = "127.0.0.1"
 		}
 	}
-	if self.fragmentSize >= 1460 {
-		self.fragmentSize = 1460
+	if self.FragmentSize >= 1460 {
+		self.FragmentSize = 1460
 	}
 }
