@@ -65,7 +65,6 @@ func (self *server) Run(ctx context.Context) error {
 				continue
 			}
 			peerClient, ok := self.conns[peerAddr.String()]
-			fmt.Println(peerClient, ok)
 			if !ok {
 				peerClient = createPeerClient(peerAddr)
 				self.conns[peerAddr.String()] = peerClient
